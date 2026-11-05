@@ -20,7 +20,7 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(Color(UIColor.systemGray5))
+        .background(Color(UIColor.systemGray6))
     }
     
     private var titleView: some View {
@@ -36,10 +36,22 @@ struct ContentView: View {
     }
     
     private var inputCurrencyView: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            upInputField
+        ZStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 16) {
+                upInputField
+                downInputField
+            }
             
-            downInputField
+            swapCurrenciesButton
+                .frame(maxWidth: .infinity, alignment: .center)
+            
+        }
+    }
+    
+    private var swapCurrenciesButton: some View {
+        Button(action: {}) {
+            Image("ArrowButton")
+                .frame(width: 24, height: 24)
         }
     }
     
@@ -56,6 +68,7 @@ struct ContentView: View {
             }
             TextField("$9,999", text: $firstCurrency)
                 .multilineTextAlignment(.trailing)
+                .keyboardType(.numberPad)
         }
         .padding(.vertical, 23)
         .padding(.horizontal, 16)
@@ -77,6 +90,7 @@ struct ContentView: View {
             }
             TextField("$184,065.99", text: $firstCurrency)
                 .multilineTextAlignment(.trailing)
+                .keyboardType(.numberPad)
         }
         .padding(.vertical, 23)
         .padding(.horizontal, 16)
