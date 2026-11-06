@@ -7,8 +7,27 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct Currency {
+    let name: String
+    let flagName: String
+    let symbol: String
+}
+
+struct CalculatorView: View {
+    private var currencies: [Int : Currency] = [
+        1: Currency(name: "USDs", flagName: "USA", symbol: "$"),
+        2: Currency(name: "MXN", flagName: "MEX", symbol: "$"),
+        3: Currency(name: "ARS", flagName: "ARG", symbol: "$"),
+        4: Currency(name: "BRL", flagName: "BRL", symbol: "$")
+    ]
+    @State var selectedCurrency: Int
     @State var firstCurrency: String = ""
+    @State var isChooseCurrencySheetShown = true
+    
+    init() {
+        self.selectedCurrency = 1
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             titleView
@@ -21,6 +40,10 @@ struct ContentView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(Color(UIColor.systemGray6))
+        .sheet(isPresented: $isChooseCurrencySheetShown) {
+            ChooseCurrencyView()
+                .presentationDetents([.medium, .large])
+        }
     }
     
     private var titleView: some View {
@@ -79,11 +102,16 @@ struct ContentView: View {
     
     private var downInputField: some View {
         HStack(spacing: 16) {
-            Button(action: {}) {
+            Button(action: {
+                isChooseCurrencySheetShown.toggle()
+            }) {
                 HStack {
                     Image("MEX")
                     
                     Text("MXN")
+                        .foregroundStyle(Color.black)
+                    
+                    Image("ChevronDown")
                         .foregroundStyle(Color.black)
                 }
                 
@@ -100,5 +128,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    CalculatorView()
 }
