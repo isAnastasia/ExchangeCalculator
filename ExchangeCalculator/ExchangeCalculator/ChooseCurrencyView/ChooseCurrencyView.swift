@@ -7,13 +7,19 @@
 
 import SwiftUI
 
+
+
 struct ChooseCurrencyView: View {
-    private var currencies: [Int : Currency] = [
-        1: Currency(name: "USDs", flagName: "USA", symbol: "$"),
-        2: Currency(name: "MXN", flagName: "MEX", symbol: "$"),
-        3: Currency(name: "ARS", flagName: "ARG", symbol: "$"),
-        4: Currency(name: "BRL", flagName: "BRL", symbol: "$")
-    ]
+    @StateObject private var vm: ChooseCurrencyViewModel
+    private let onSelect: (Currency) -> ()
+    private let close: () -> ()
+    
+    init(onSelect: @escaping (Currency) -> Void, close: @escaping () -> (),  _ choosenCurrency: Currency) {
+        print("[DEBUG]: choosen currency: \(choosenCurrency)")
+        self.onSelect = onSelect
+        self.close = close
+        _vm = StateObject(wrappedValue: ChooseCurrencyViewModel(choosenCurrency: choosenCurrency))
+    }
     
     var body: some View {
         VStack() {
@@ -23,7 +29,9 @@ struct ChooseCurrencyView: View {
                 
                 Spacer()
                 
-                Button(action: {}) {
+                Button(action: {
+                    close()
+                }) {
                     Image("xbutton")
                         .frame(width: 32, height: 32)
                 }
@@ -33,8 +41,8 @@ struct ChooseCurrencyView: View {
             .padding(.bottom, 16)
             
             List {
-                ForEach(currencies.sorted{$0.key < $1.key}, id: \.key) { index, currency in
-                    button(id: index)
+                ForEach(vm.currencies) {currency in
+                    button(currency)
                         .listRowSeparator(.hidden)
                 }
             }
@@ -46,24 +54,24 @@ struct ChooseCurrencyView: View {
     }
     
     @ViewBuilder
-    private func button(id: Int) -> some View {
+    private func button(_ currency: Currency) -> some View {
         HStack(spacing: 8) {
 
-            Image("USA")
+            Image(currency.flagName)
                 .resizable()
                 .frame(width: 24, height: 24)
                 .padding(6)
                 .background(.backgroundOnSecondary)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             
-            Text(currencies[id]?.name ?? "")
+            Text(currency.name)
                 .font(.system(size: 16, weight: .semibold))
             
             Spacer()
             
-            Image(systemName: "circle")
+            Image(systemName: vm.isChoosenCurrency(currency) ? "checkmark.circle.fill" : "circle")
                 .resizable()
-                .foregroundStyle(Color.borderOnSecondary)
+                .foregroundStyle(vm.isChoosenCurrency(currency) ? Color.green : Color.borderOnSecondary)
                 .frame(width: 24, height: 24)
         }
         .padding(.vertical, 6)
@@ -71,5 +79,5 @@ struct ChooseCurrencyView: View {
 }
 
 #Preview {
-    ChooseCurrencyView()
+    ChooseCurrencyView(onSelect: {_ in Currency(name: "", flagName: "", symbol: "")}, close: {},  Currency(name: "", flagName: "", symbol: ""))
 }

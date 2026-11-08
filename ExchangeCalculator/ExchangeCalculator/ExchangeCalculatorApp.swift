@@ -11,7 +11,7 @@ import SwiftUI
 struct ExchangeCalculatorApp: App {
     var body: some Scene {
         WindowGroup {
-            CalculatorView()
+            CalculatorView(networkService: NetworkServiceImpl())
         }
     }
 }

@@ -7,25 +7,11 @@
 
 import SwiftUI
 
-struct Currency {
-    let name: String
-    let flagName: String
-    let symbol: String
-}
-
 struct CalculatorView: View {
-    private var currencies: [Int : Currency] = [
-        1: Currency(name: "USDs", flagName: "USA", symbol: "$"),
-        2: Currency(name: "MXN", flagName: "MEX", symbol: "$"),
-        3: Currency(name: "ARS", flagName: "ARG", symbol: "$"),
-        4: Currency(name: "BRL", flagName: "BRL", symbol: "$")
-    ]
-    @State var selectedCurrency: Int
-    @State var firstCurrency: String = ""
-    @State var isChooseCurrencySheetShown = true
+    @StateObject private var viewModel: CalculatorViewModel
     
-    init() {
-        self.selectedCurrency = 1
+    init(networkService: NetworkService) {
+        _viewModel = StateObject(wrappedValue: CalculatorViewModel(networkService: networkService))
     }
     
     var body: some View {
@@ -40,10 +26,15 @@ struct CalculatorView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(Color(UIColor.systemGray6))
-        .sheet(isPresented: $isChooseCurrencySheetShown) {
-            ChooseCurrencyView()
-                .presentationDetents([.medium, .large])
+        .sheet(isPresented: $viewModel.isChooseCurrencySheetShown) {
+            if let choosenCurrency = viewModel.choosenCurrency {
+                
+                ChooseCurrencyView(onSelect: viewModel.onSelect(_:), close: viewModel.close, choosenCurrency)
+                    .presentationDetents([.medium, .large])
+            }
+            
         }
+        .onAppear {viewModel.fetchData()}
     }
     
     private var titleView: some View {
@@ -56,6 +47,13 @@ struct CalculatorView: View {
                 .font(.system(size: 16, weight: .semibold))
         }
         
+    }
+    
+    private var swapCurrenciesButton: some View {
+        Button(action: {}) {
+            Image("ArrowButton")
+                .frame(width: 24, height: 24)
+        }
     }
     
     private var inputCurrencyView: some View {
@@ -71,25 +69,20 @@ struct CalculatorView: View {
         }
     }
     
-    private var swapCurrenciesButton: some View {
-        Button(action: {}) {
-            Image("ArrowButton")
-                .frame(width: 24, height: 24)
-        }
-    }
-    
     private var upInputField: some View {
         HStack(spacing: 16) {
             Button(action: {}) {
                 HStack {
                     Image("USA")
+                        .resizable()
+                        .frame(width: 16, height: 16)
                     
                     Text("USDs")
                         .foregroundStyle(Color.black)
                 }
                 
             }
-            TextField("$9,999", text: $firstCurrency)
+            TextField("$9,999", text: $viewModel.dollarInput)
                 .multilineTextAlignment(.trailing)
                 .keyboardType(.numberPad)
         }
@@ -103,12 +96,14 @@ struct CalculatorView: View {
     private var downInputField: some View {
         HStack(spacing: 16) {
             Button(action: {
-                isChooseCurrencySheetShown.toggle()
+                viewModel.isChooseCurrencySheetShown.toggle()
             }) {
                 HStack {
-                    Image("MEX")
+                    Image(viewModel.choosenCurrency?.flagName ?? "USA")
+                        .resizable()
+                        .frame(width: 16, height: 16)
                     
-                    Text("MXN")
+                    Text(viewModel.choosenCurrency?.name ?? "USDs")
                         .foregroundStyle(Color.black)
                     
                     Image("ChevronDown")
@@ -116,7 +111,7 @@ struct CalculatorView: View {
                 }
                 
             }
-            TextField("$184,065.99", text: $firstCurrency)
+            TextField("$184,065.99", text: $viewModel.currencyInput)
                 .multilineTextAlignment(.trailing)
                 .keyboardType(.numberPad)
         }
@@ -128,5 +123,5 @@ struct CalculatorView: View {
 }
 
 #Preview {
-    CalculatorView()
+    CalculatorView(networkService: NetworkServiceImpl())
 }
