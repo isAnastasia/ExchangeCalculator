@@ -15,7 +15,6 @@ struct ChooseCurrencyView: View {
     private let close: () -> ()
     
     init(onSelect: @escaping (Currency) -> Void, close: @escaping () -> (),  _ choosenCurrency: Currency) {
-        print("[DEBUG]: choosen currency: \(choosenCurrency)")
         self.onSelect = onSelect
         self.close = close
         _vm = StateObject(wrappedValue: ChooseCurrencyViewModel(choosenCurrency: choosenCurrency))
@@ -55,26 +54,32 @@ struct ChooseCurrencyView: View {
     
     @ViewBuilder
     private func button(_ currency: Currency) -> some View {
-        HStack(spacing: 8) {
+        Button(action: {
+            onSelect(currency)
+        }) {
+            HStack(spacing: 8) {
 
-            Image(currency.flagName)
-                .resizable()
-                .frame(width: 24, height: 24)
-                .padding(6)
-                .background(.backgroundOnSecondary)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-            
-            Text(currency.name)
-                .font(.system(size: 16, weight: .semibold))
-            
-            Spacer()
-            
-            Image(systemName: vm.isChoosenCurrency(currency) ? "checkmark.circle.fill" : "circle")
-                .resizable()
-                .foregroundStyle(vm.isChoosenCurrency(currency) ? Color.green : Color.borderOnSecondary)
-                .frame(width: 24, height: 24)
+                Image(currency.flagName)
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .padding(6)
+                    .background(.backgroundOnSecondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                
+                Text(currency.name)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Color.black)
+                
+                Spacer()
+                
+                Image(systemName: vm.isChoosenCurrency(currency) ? "checkmark.circle.fill" : "circle")
+                    .resizable()
+                    .foregroundStyle(vm.isChoosenCurrency(currency) ? Color.green : Color.borderOnSecondary)
+                    .frame(width: 24, height: 24)
+            }
+            .padding(.vertical, 6)
         }
-        .padding(.vertical, 6)
+        
     }
 }
 

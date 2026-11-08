@@ -20,7 +20,6 @@ final class CalculatorViewModel: ObservableObject {
     }
     
     func onSelect(_ currency: Currency) {
-        print("\(currency.name)")
         choosenCurrency = currency
         isChooseCurrencySheetShown = false
     }
