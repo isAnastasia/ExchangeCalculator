@@ -24,6 +24,6 @@ final class ChooseCurrencyViewModel: ObservableObject {
     }
     
     private func fetchData() {
-        self.currencies = networkService.fetchCurrencies()
+        self.currencies = networkService.fetchCurrenciesMock()
     }
 }

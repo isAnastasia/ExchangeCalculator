@@ -30,7 +30,7 @@ final class CalculatorViewModel: ObservableObject {
     
     @MainActor
     func fetchData() {
-        let currencies = networkService.fetchCurrencies()
+        let currencies = networkService.fetchCurrenciesMock()
         if let first = currencies.first {
             self.choosenCurrency = first
         }
