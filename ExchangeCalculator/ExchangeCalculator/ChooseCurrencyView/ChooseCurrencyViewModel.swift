@@ -12,7 +12,7 @@ final class ChooseCurrencyViewModel: ObservableObject {
     
     @Published var choosenCurrency: Currency
     
-    private var networkService = NetworkServiceImpl()
+    private var networkService = NetworkServiceImpl.shared
     
     init(choosenCurrency: Currency) {
         self.choosenCurrency = choosenCurrency
@@ -24,6 +24,16 @@ final class ChooseCurrencyViewModel: ObservableObject {
     }
     
     private func fetchData() {
-        self.currencies = networkService.fetchCurrenciesMock()
+        Task {
+            do {
+                let currenciesNames = try await networkService.getAvailableCurrenciesMock()
+                await MainActor.run {
+                    self.currencies = currenciesNames.compactMap { name in
+                        return Currency(name: name, flagName: name, symbol: "$")
+                    }
+                }
+            }
+        }
+        
     }
 }

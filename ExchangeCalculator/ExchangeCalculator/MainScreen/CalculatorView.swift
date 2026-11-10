@@ -123,5 +123,5 @@ struct CalculatorView: View {
 }
 
 #Preview {
-    CalculatorView(networkService: NetworkServiceImpl())
+    CalculatorView(networkService: NetworkServiceImpl.shared)
 }

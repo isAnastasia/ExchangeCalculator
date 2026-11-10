@@ -28,12 +28,24 @@ final class CalculatorViewModel: ObservableObject {
         self.isChooseCurrencySheetShown = false
     }
     
-    @MainActor
     func fetchData() {
-        let currencies = networkService.fetchCurrenciesMock()
-        if let first = currencies.first {
-            self.choosenCurrency = first
+        Task { @MainActor in
+            do {
+                let currenciesNames = try await networkService.getAvailableCurrenciesMock()
+                let currencies = currenciesNames.compactMap { name in
+                    return Currency(name: name, flagName: name, symbol: "$")
+                }
+                await MainActor.run {
+                    if let first = currencies.first {
+                        self.choosenCurrency = first
+                    }
+                }
+                
+            }
         }
+        
+        
+        
     }
     
 }

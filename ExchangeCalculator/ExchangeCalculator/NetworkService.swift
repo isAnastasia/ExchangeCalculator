@@ -7,23 +7,10 @@
 
 import Foundation
 
-struct ExchangeRateDTO: Decodable {
-    let ask: String
-    let bid: String
-    let book: String
-    let date: String
-}
-
-struct ExchangeRate {
-    let ask: Decimal
-    let bid: Decimal
-    let book: (String, String)
-    let date: Date
-}
-
 protocol NetworkService {
-    func fetchCurrenciesMock() async throws -> [Currency]
+    func getAvailableCurrenciesMock() async throws -> [String]
     func getAvailableCurrencies() async throws -> [String]
+    func getExchangeRate(for currencies: [String]) async throws -> [ExchangeRateDTO]
 }
 
 enum RequestMethod: String {
@@ -52,13 +39,12 @@ final class NetworkServiceImpl: NetworkService {
     
     let baseURL = "https://api.dolarapp.dev/v1"
     
-    func fetchCurrenciesMock() -> [Currency] {
+    func getAvailableCurrenciesMock() async throws -> [String] {
         return [
-            Currency(name: "COP", flagName: "COP", symbol: "$"),
-            Currency(name: "EURs", flagName: "EUR", symbol: "$"),
-            Currency(name: "MXN", flagName: "MEX", symbol: "$"),
-            Currency(name: "ARS", flagName: "ARG", symbol: "$"),
-            Currency(name: "BRL", flagName: "BRL", symbol: "$")
+            "MXN",
+            "ARS",
+            "BRL",
+            "COP"
         ]
     }
     
